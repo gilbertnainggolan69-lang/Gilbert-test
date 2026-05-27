@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GILBERT TOOLS | Web Analyzer Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0099FF',    // Biru Muda Mewah
+                        dark: '#000000',       // Hitam Pekat
+                        card: '#111111',       // Hitam Sedang untuk kartu
+                        light: '#FFFFFF',      // Putih Bersih
+                        gray: {
+                            100: '#F5F7FA',
+                            200: '#EBECEF',
+                            300: '#C9CDD4',
+                            400: '#86909C',
+                            500: '#4E5969',
+                            600: '#272E3B',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'luxury': '0 8px 32px rgba(0, 153, 255, 0.15)',
+                        'luxury-strong': '0 12px 40px rgba(0, 153, 255, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .scrollbar-custom {
+                scrollbar-width: thin;
+                scrollbar-color: #c5c5c5 #1a1a1a;
+            }
+            .scrollbar-custom::-webkit-scrollbar { width: 6px; }
+            .scrollbar-custom::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 10px; }
+            .scrollbar-custom::-webkit-scrollbar-thumb { background: #0099FF; border-radius: 10px; }
+            
+            .transition-custom {
+                @apply transition-all duration-300 ease-in-out;
+            }
+            .hover-lift {
+                @apply hover:-translate-y-1 hover:shadow-luxury-strong transition-custom;
+            }
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-sky-400;
+            }
+            .bg-blur { 
+                backdrop-filter: blur(16px); 
+                -webkit-backdrop-filter: blur(16px); 
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-6px); }
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-light min-h-screen font-inter overflow-x-hidden relative">
+    
+    <canvas id="bg-particles" class="fixed top-0 left-0 w-full h-full -z-10 opacity-40"></canvas>
+
+    
+    <nav class="sticky top-0 z-50 bg-black/50 bg-blur border-b border-white/10 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center shadow-luxury animate-float">
+                    <i class="fa-solid fa-code text-lg"></i>
+                </div>
+                <h1 class="text-[1.4rem] font-bold text-gradient">GILBERT ANALYZER</h1>
+            </div>
+        </div>
+    </nav>
+
+    
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        
+        
+        <div class="text-center max-w-2xl mx-auto mb-16 pt-10">
+            <h2 class="text-[clamp(1.8rem,5vw,2.8rem)] font-extrabold leading-tight">
+                Tools <span class="text-gradient">Membongkar Link</span> <br> Menjadi Kode HTML
+            </h2>
+            <p class="text-gray-400 mt-4 text-lg">Ekstraksi, analisis, dan tampilkan struktur kode sumber website dengan akurasi tinggi</p>
+        </div>
+
+        
+        <div class="max-w-3xl mx-auto bg-card/80 bg-blur rounded-[20px] shadow-luxury border border-white/10 p-6 md:p-8 mb-10">
+            
+            
+            <div class="mb-6">
+                <label class="block text-gray-300 mb-3 text-sm font-semibold tracking-wider">ALAMAT WEBSITE / URL</label>
+                <div class="relative group">
+                    <input 
+                        type="text" 
+                        id="url" 
+                        placeholder="Masukkan link: https://contoh-website.com" 
+                        class="w-full p-4 pl-12 bg-dark/60 border border-gray-700 focus:border-primary rounded-lg outline-none transition-all duration-300 text-base text-light"
+                    >
+                    <i class="fa-solid fa-link absolute left-4 top-1/2 -translate-y-1/2 text-primary/80 text-lg"></i>
+                </div>
+            </div>
+
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <button onclick="process()" class="bg-gradient-to-r from-primary to-sky-500 hover:from-sky-500 hover:to-primary text-white font-semibold py-3 px-4 rounded-lg transition-custom transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-luxury">
+                    <i class="fa-solid fa-magnifying-glass mr-2"></i> Analisis Data
+                </button>
+                
+                <button onclick="clearAll()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold py-3 px-4 rounded-lg transition-custom border border-gray-700 hover:border-gray-500">
+                    <i class='fa-solid fa-arrows-rotate mr-2'></i> Reset
+                </button>
+                
+                <button onclick="copy()" id="copyBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-custom border border-gray-600">
+                    <i class='fa-solid fa-copy mr-2'></i> Salin Kode
+                </button>
+            </div>
+
+            
+            <div id="statusBox" class="hidden mb-6 p-3 rounded-lg bg-dark/50 border border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div id="loadingIcon" class="hidden w-5 h-5 border-2 border-gray-600 border-t-primary rounded-full animate-spin"></div>
+                    <span id="statusText" class="font-medium text-sm"></span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                    <div id="progressBar" class="h-full bg-primary w-0 transition-all duration-300 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- HASIL KODE -->
+            <div id="result" class="hidden opacity-0 transition-all duration-500">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-gray-300 text-base font-semibold">Hasil Kode Sumber:</span>
+                    <button onclick="saveAsFile()" class="text-sm text-primary hover:text-sky-400 transition-custom">
+                        <i class="fa-solid fa-download mr-1"></i> Simpan File
+                    </button>
+                </div>
+                <div class="relative rounded-lg overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-sky-400"></div>
+                    <textarea 
+                        id="out" 
+                        class="w-full h-[450px] bg-dark text-gray-200 p-4 text-sm font-mono resize-none scrollbar-custom focus:outline-none pt-5"
+                        readonly
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="text-center mt-10 mb-6">
+            <p class="text-[clamp(1.8rem, 5vw, 2.5rem)] font-black text-gradient tracking-wider">
+                By GILBERT
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        
+        const canvas = document.getElementById('bg-particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particlesArray = [];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.2 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.2;
+                this.speedY = (Math.random() - 0.5) * 0.2;
+                this.color = `rgba(0, 153, 255, ${Math.random() * 0.15})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for(let i = 0; i < 100; i++) particlesArray.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        init(); animate();
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; init(); };
+
+
+       
+        async function process() {
+            const u = document.getElementById('url').value;
+            if(!u) { alert("Masukkan alamat URL terlebih dahulu!"); return; }
+            
+            const res = document.getElementById('result');
+            const out = document.getElementById('out');
+            const statusBox = document.getElementById('statusBox');
+            const statusText = document.getElementById('statusText');
+            const progressBar = document.getElementById('progressBar');
+            const loadingIcon = document.getElementById('loadingIcon');
+
+            res.style.display = 'block';
+            res.classList.add('opacity-100');
+            statusBox.style.display = 'block';
+            statusText.textContent = "Memproses permintaan... Menghubungkan ke server...";
+            statusText.className = "text-yellow-400 font-medium";
+            loadingIcon.classList.remove('hidden');
+            progressBar.style.width = "10%";
+            out.value = "// SISTEM ANALISIS AKTIF\n// Target: " + u + "\n// By Gilbert Tools\n\n";
+
+            
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+                `https://corsproxy.io/?${encodeURIComponent(u)}`,
+                `https://proxy.cors.sh/${u}`,
+                `https://cors-anywhere.herokuapp.com/${u}`,
+                `https://thingproxy.freeboard.io/fetch/${u}`,
+                `https://www.whateverorigin.org/get?url=${encodeURIComponent(u)}&callback=`,
+                `https://crossorigin.me/${u}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+                `https://api.proxiesite.com/proxy?url=${encodeURIComponent(u)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
+            ];
+
+            let sukses = false;
+            let logError = "";
+
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    let persen = 10 + (i * 9);
+                    progressBar.style.width = persen + "%";
+                    statusText.textContent = `Memindai struktur... [Koneksi ${i+1}/10]`;
+                    
+                    const response = await fetch(proxies[i], {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    
+                    if (!response.ok) throw new Error("Koneksi gagal");
+                    
+                    const data = await response.text();
+                    
+                    progressBar.style.width = "100%";
+                    statusText.textContent = "✅ Berhasil! Data kode telah dimuat sepenuhnya.";
+                    statusText.className = "text-green-400 font-medium";
+                    out.value = `/* ==============================================
+   HASIL ANALISIS KODE SUMBER
+   Alamat: ${u}
+   Waktu: ${new Date().toLocaleString()}
+   Dibuat oleh: GILBERT
+============================================== */
+
+${data}`;
+                    sukses = true;
+                    break;
+                } catch (err) {
+                    logError += `⚠️ Server ${i+1}: Tidak tersedia\n`;
+                    continue;
+                }
+            }
+
+            if(!sukses){
+                progressBar.style.width = "100%";
+                progressBar.style.background = "#F53F3F";
+                statusText.textContent = "❌ Gagal mengakses! Target memiliki proteksi tinggi atau link salah.";
+                statusText.className = "text-red-400 font-medium";
+                out.value = `⚠️ PEMBERITAHUAN SISTEM ⚠️
+
+Sistem tidak dapat mengakses alamat tersebut.
+
+Kemungkinan:
+1. Website memiliki proteksi keamanan tingkat tinggi.
+2. Alamat URL salah atau tidak lengkap.
+3. Koneksi tidak stabil.
+
+— Gilbert Professional Tools`;
+            }
+            loadingIcon.classList.add('hidden');
+        }
+
+        
+        function copy() {
+            const out = document.getElementById('out');
+            out.select();
+            document.execCommand('copy');
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = "✅ Disalin!";
+            btn.classList.add('bg-green-600');
+            setTimeout(() => {
+                btn.innerHTML = "<i class='fa-solid fa-copy mr-2'></i> Salin Kode";
+                btn.classList.remove('bg-green-600');
+            }, 2000);
+        }
+
+        
+        function clearAll() {
+            document.getElementById('url').value = "";
+            document.getElementById('result').style.display = "none";
+            document.getElementById('result').classList.remove('opacity-100');
+            document.getElementById('statusBox').style.display = "none";
+        }
+
+        
+        function saveAsFile() {
+            const content = document.getElementById('out').value;
+            if(!content) { alert("Data belum tersedia! Silakan analisis dulu."); return; }
+            const blob = new Blob([content], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Gilbert_Code_${new Date().getTime()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
